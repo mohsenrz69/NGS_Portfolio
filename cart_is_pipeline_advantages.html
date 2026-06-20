@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>cart_is — Pipeline Goals & Advantages</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    background: #080b12;
+    min-height: 100vh;
+    color: #e2e8f0;
+    padding: 48px 32px 64px;
+  }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    text-align: center;
+    margin-bottom: 52px;
+  }
+  .page-header .eyebrow {
+    display: inline-block;
+    padding: 5px 16px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    background: #0a2318;
+    border: 1px solid #276749;
+    color: #68d391;
+  }
+  .page-header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #f7fafc;
+    letter-spacing: -0.5px;
+    max-width: 680px;
+    margin: 0 auto 10px;
+    line-height: 1.2;
+  }
+  .page-header h1 .hl { color: #d6bcfa; }
+  .page-header p {
+    font-size: 13px;
+    color: #4a5568;
+    margin-top: 8px;
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+  }
+  .meta {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 18px;
+  }
+  .meta span {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: #1a2030;
+    border: 1px solid #2d3748;
+    color: #718096;
+  }
+
+  /* ── LEGEND ── */
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin: 28px 0 0;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #4a5568;
+    font-weight: 600;
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+  }
+  .dot-goal { background: #2c7a7b; }
+  .dot-edge { background: #c05621; }
+
+  /* ── FLOW CONTAINER ── */
+  .flow {
+    max-width: 720px;
+    margin: 48px auto 0;
+  }
+
+  /* ── STAGE CARD ── */
+  .stage {
+    border-radius: 14px;
+    padding: 16px 18px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .stage-icon {
+    font-size: 20px;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .stage-num {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    opacity: 0.4;
+    margin-bottom: 3px;
+  }
+  .stage-goal {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.25;
+    margin-bottom: 4px;
+  }
+  .stage-sub {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    opacity: 0.35;
+    margin-bottom: 2px;
+  }
+  .stage-desc {
+    font-size: 12px;
+    color: rgba(255,255,255,0.42);
+    margin-top: 4px;
+    line-height: 1.55;
+  }
+
+  /* ── ADVANTAGE BADGES ── */
+  .adv {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 10px;
+    margin-top: 7px;
+    margin-right: 4px;
+    letter-spacing: 0.2px;
+  }
+  .adv-green  { background: #0a2318; color: #68d391; border: 1px solid #276749; }
+  .adv-blue   { background: #0a1428; color: #90cdf4; border: 1px solid #2b6cb0; }
+  .adv-purple { background: #1a0d30; color: #d6bcfa; border: 1px solid #6b46c1; }
+  .adv-amber  { background: #1e1000; color: #fbd38d; border: 1px solid #b7791f; }
+  .adv-teal   { background: #0a1a1a; color: #81e6d9; border: 1px solid #2c7a7b; }
+  .adv-red    { background: #1e0808; color: #fc8181; border: 1px solid #c53030; }
+
+  /* Step background colours */
+  .s1  { background: #0d1520; border: 1px solid #2b6cb0; }
+  .s2  { background: #0a1a1a; border: 1px solid #2c7a7b; }
+  .s3  { background: #0a1a1a; border: 1px solid #285e61; }
+  .s4  { background: #0a1a1a; border: 1px solid #234e52; }
+  .s5  { background: #1e1200; border: 1px solid #c05621; }
+  .s6  { background: #1a0d30; border: 1px solid #6b46c1; }
+  .s7  { background: #100d28; border: 1px solid #553c9a; }
+
+  /* ── ARROW ── */
+  .arrow {
+    display: flex;
+    justify-content: center;
+    padding: 5px 0;
+  }
+  .arrow-inner { display: flex; flex-direction: column; align-items: center; }
+  .a-line { width: 1.5px; height: 16px; background: #2d3748; }
+  .a-tip {
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #2d3748;
+  }
+
+  /* ── SIGNATURE STEP SCHEMATIC ── */
+  .schema {
+    margin-top: 14px;
+    border-top: 1px dashed rgba(255,255,255,0.1);
+    padding-top: 14px;
+  }
+  .schema-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #4a5568;
+    margin-bottom: 8px;
+  }
+  .bar {
+    display: flex;
+    align-items: stretch;
+    height: 34px;
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    padding: 0 5px;
+    text-align: center;
+    line-height: 1.1;
+    text-transform: uppercase;
+    font-size: 8px;
+  }
+  .seg.ltr  { background: #2c7a7b; flex: 0 0 11%; }
+  .seg.prom { background: #3aa0a0; flex: 1; }
+  .seg.car  { background: #6b46c1; flex: 1.6; }
+  .seg.wpre { background: #3aa0a0; flex: 0.9; }
+  .gap      { flex: 0 0 14px; }
+  .bar.backbone {
+    margin-top: 7px;
+    border: 1.5px dashed #c53030;
+    background: rgba(197,48,48,0.08);
+  }
+  .bar.backbone .seg { color: #fc8181; background: transparent; }
+  .schema-note {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    margin-top: 9px;
+    font-size: 10px;
+    color: #4a5568;
+    font-weight: 600;
+  }
+  .schema-note .ok  { color: #68d391; }
+  .schema-note .bad { color: #fc8181; }
+
+  /* ── BOTTOM BAR ── */
+  .bottom-bar {
+    max-width: 720px;
+    margin: 44px auto 0;
+    background: #0d1220;
+    border: 1px solid #1e2a40;
+    border-radius: 16px;
+    padding: 28px 32px;
+  }
+  .bottom-bar h3 {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #4a5568;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 22px;
+  }
+  .vs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .vs-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .vs-card .k {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #4a5568;
+    margin-bottom: 7px;
+  }
+  .vs-card .v {
+    font-size: 13px;
+    font-weight: 600;
+    color: #dce6e9;
+    line-height: 1.4;
+  }
+  .v-teal   { color: #81e6d9; }
+  .v-purple { color: #d6bcfa; }
+  .v-amber  { color: #fbd38d; }
+  .v-green  { color: #68d391; }
+
+  @media (max-width: 560px) {
+    body { padding: 32px 16px 48px; }
+    .vs-grid { grid-template-columns: 1fr; }
+    .meta { gap: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<div class="page-header">
+  <div class="eyebrow">✦ CAR-T · Lentiviral Integration-Site Pipeline</div>
+  <h1>Built to tell intended CAR-cassette integration apart from <span class="hl">vector-backbone integration</span></h1>
+  <p>A genome-wide WGS pipeline that goes from the vendor's raw FASTQ to safety-graded integration sites. Every step earns its place — here's the goal it serves and the edge it has over conventional workflows.</p>
+  <div class="meta">
+    <span>WGS · genome-wide</span>
+    <span>Raw FASTQ → annotated sites</span>
+    <span>Payload vs backbone resolved</span>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot dot-goal"></div>Goal — what the step is for</div>
+    <div class="legend-item"><div class="legend-dot dot-edge"></div>Edge — the advantage vs other pipelines</div>
+  </div>
+</div>
+
+<!-- ══ PIPELINE FLOW ══ -->
+<div class="flow">
+
+  <!-- 1 -->
+  <div class="stage s1">
+    <div class="stage-icon">🗂️</div>
+    <div>
+      <div class="stage-num">Stage 1 · Raw reads → analysis-ready</div>
+      <div class="stage-goal">Start from vendor raw FASTQ, end to end</div>
+      <div class="stage-desc">Own the whole analysis from the company's raw data, with quality control on raw and trimmed reads.</div>
+      <div><span class="adv adv-teal">↑ Goal: Full QC ownership from source data</span></div>
+      <div><span class="adv adv-blue">↑ Edge: Duplicate-aware — PCR copies never inflate clone size</span></div>
+    </div>
+  </div>
+  <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+  <!-- 2 -->
+  <div class="stage s2">
+    <div class="stage-icon">🧬</div>
+    <div>
+      <div class="stage-num">Stage 2 · One combined reference</div>
+      <div class="stage-goal">Host genome and vector aligned together</div>
+      <div class="stage-desc">Read the exact points where vector sequence joins the genome.</div>
+      <div><span class="adv adv-teal">↑ Goal: Capture precise vector–genome junctions</span></div>
+      <div><span class="adv adv-blue">↑ Edge: Single alignment — no separate vector step, junction bases preserved</span></div>
+    </div>
+  </div>
+  <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+  <!-- 3 -->
+  <div class="stage s3">
+    <div class="stage-icon">📍</div>
+    <div>
+      <div class="stage-num">Stage 3 · Integration-site calling</div>
+      <div class="stage-goal">Two independent lines of evidence</div>
+      <div class="stage-desc">Pinpoint each integration site at single-base resolution.</div>
+      <div><span class="adv adv-teal">↑ Goal: Single-base resolution on every site</span></div>
+      <div><span class="adv adv-blue">↑ Edge: Split-reads and read-pairs cross-check every call — each site has a confidence tier</span></div>
+    </div>
+  </div>
+  <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+  <!-- 4 -->
+  <div class="stage s4">
+    <div class="stage-icon">📊</div>
+    <div>
+      <div class="stage-num">Stage 4 · Clonal abundance</div>
+      <div class="stage-goal">How large is each integrated clone</div>
+      <div class="stage-desc">Estimate the relative size of each clone in the product.</div>
+      <div><span class="adv adv-teal">↑ Goal: Accurate clone-size estimation across the product</span></div>
+      <div><span class="adv adv-green">↑ Edge: Counts unique shear sites, not raw reads — stays honest under PCR duplication</span></div>
+    </div>
+  </div>
+  <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+  <!-- 5 -->
+  <div class="stage s5">
+    <div class="stage-icon">✂️</div>
+    <div>
+      <div class="stage-num">Stage 5 · Insert sizing & filtering</div>
+      <div class="stage-goal">Keep substantial inserts, drop fragments</div>
+      <div class="stage-desc">Separate meaningful integrations from short, fragmentary vector pieces.</div>
+      <div><span class="adv adv-teal">↑ Goal: Separate real integrations from noise</span></div>
+      <div><span class="adv adv-amber">↑ Edge: Insert length measured per event, filtered at a configurable threshold (e.g. &gt;200 bp)</span></div>
+    </div>
+  </div>
+  <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+  <!-- 6 — SIGNATURE STEP -->
+  <div class="stage s6">
+    <div class="stage-icon">⚑</div>
+    <div>
+      <div class="stage-num">Stage 6 · Vector content&nbsp;&nbsp;<span style="background:#6b46c1;color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:5px;letter-spacing:0.8px;text-transform:uppercase;vertical-align:1px;">Signature Step</span></div>
+      <div class="stage-goal">Intended payload vs. plasmid backbone</div>
+      <div class="stage-desc">Show which vector regions integrated at each site — promoter, CAR cassette, LTRs, WPRE — and whether backbone came along.</div>
+      <div><span class="adv adv-teal">↑ Goal: Know exactly what integrated, not just where</span></div>
+      <div><span class="adv adv-purple">↑ Edge: LTR-bounded rule flags ori, AmpR, and bacterial backbone — invisible to conventional pipelines</span></div>
+
+      <div class="schema">
+        <div class="schema-label">What integrated — read at a glance</div>
+        <div class="bar">
+          <div class="seg ltr">5′LTR</div>
+          <div class="seg prom">Promoter</div>
+          <div class="seg car">CAR cassette</div>
+          <div class="seg wpre">WPRE</div>
+          <div class="seg ltr">3′LTR</div>
+        </div>
+        <div class="bar backbone">
+          <div class="gap"></div>
+          <div class="seg" style="flex:1">ori</div>
+          <div class="seg" style="flex:1">AmpR</div>
+          <div class="seg" style="flex:1.4">bacterial backbone</div>
+        </div>
+        <div class="schema-note">
+          <span><span class="ok">✓ Within LTRs</span> — intended payload</span>
+          <span><span class="bad">⚑ Outside LTRs</span> — backbone flagged</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+  <!-- 7 -->
+  <div class="stage s7">
+    <div class="stage-icon">⚕️</div>
+    <div>
+      <div class="stage-num">Stage 7 · Safety-grade annotation</div>
+      <div class="stage-goal">Every site as a clinical risk readout</div>
+      <div class="stage-desc">Turn coordinates into biology a reviewer can act on.</div>
+      <div><span class="adv adv-teal">↑ Goal: Actionable biology for clinical reviewers</span></div>
+      <div><span class="adv adv-red">↑ Edge: Oncogene proximity (e.g. LMO2), exon/intron context, orientation, and CIS flags — the full insertional-mutagenesis risk signal</span></div>
+    </div>
+  </div>
+
+  <!-- ══ BOTTOM BAR ══ -->
+  <div class="bottom-bar">
+    <h3>What this pipeline resolves that others don't</h3>
+    <div class="vs-grid">
+      <div class="vs-card">
+        <div class="k">Coverage approach</div>
+        <div class="v v-teal">Genome-wide WGS · no amplicon bias</div>
+      </div>
+      <div class="vs-card">
+        <div class="k">Backbone detection</div>
+        <div class="v v-purple">LTR-bounded rule flags all backbone sequence per site</div>
+      </div>
+      <div class="vs-card">
+        <div class="k">Safety output</div>
+        <div class="v v-amber">Oncogene proximity · orientation · CIS flags per site</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /flow -->
+
+</body>
+</html>

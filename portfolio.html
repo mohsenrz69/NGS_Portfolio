@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mohsen Razzaznian — NGS Portfolio</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    background: #080b12;
+    min-height: 100vh;
+    color: #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px 64px;
+  }
+
+  /* ── BACKGROUND GRID ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── SUBTLE GLOW ── */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 600px;
+    background: radial-gradient(ellipse at center, rgba(109,52,214,0.10) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 680px;
+    width: 100%;
+  }
+
+  /* ── EYEBROW ── */
+  .eyebrow {
+    display: inline-block;
+    padding: 5px 16px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    background: #0a2318;
+    border: 1px solid #276749;
+    color: #68d391;
+  }
+
+  /* ── MAIN TITLE ── */
+  h1 {
+    font-size: clamp(28px, 5vw, 46px);
+    font-weight: 800;
+    color: #f7fafc;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  h1 .name { color: #fff; }
+  h1 .label {
+    display: block;
+    font-size: clamp(14px, 2.5vw, 20px);
+    font-weight: 500;
+    color: #4a5568;
+    letter-spacing: 0.5px;
+    margin-top: 10px;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 48px;
+    height: 2px;
+    background: linear-gradient(90deg, #6b46c1, #2c7a7b);
+    border-radius: 2px;
+    margin: 32px auto;
+  }
+
+  /* ── CARDS ── */
+  .cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 0;
+  }
+
+  .card {
+    display: block;
+    text-decoration: none;
+    border-radius: 16px;
+    padding: 24px 28px;
+    text-align: left;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    border-radius: 16px;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 50px -12px rgba(0,0,0,0.6);
+  }
+  .card:active { transform: translateY(-1px); }
+
+  /* Card 1 — Integration Site */
+  .card-1 { border-color: rgba(109,52,214,0.35); }
+  .card-1::before { background: radial-gradient(ellipse at 0% 50%, rgba(109,52,214,0.10), transparent 70%); }
+  .card-1:hover { border-color: rgba(109,52,214,0.7); background: rgba(109,52,214,0.07); }
+  .card-1:hover::before { opacity: 1; }
+  .card-1 .card-tag { background: #1a0d30; color: #d6bcfa; border: 1px solid #6b46c1; }
+  .card-1 .card-num { color: #6b46c1; }
+  .card-1 .arrow-icon { color: #d6bcfa; }
+
+  /* Card 2 — WES */
+  .card-2 { border-color: rgba(44,122,123,0.35); }
+  .card-2::before { background: radial-gradient(ellipse at 0% 50%, rgba(44,122,123,0.10), transparent 70%); }
+  .card-2:hover { border-color: rgba(44,122,123,0.7); background: rgba(44,122,123,0.07); }
+  .card-2:hover::before { opacity: 1; }
+  .card-2 .card-tag { background: #0a1a1a; color: #81e6d9; border: 1px solid #2c7a7b; }
+  .card-2 .card-num { color: #2c7a7b; }
+  .card-2 .arrow-icon { color: #81e6d9; }
+
+  .card-inner {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .card-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 13px;
+    background: rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+  .card-body { flex: 1; }
+  .card-tag {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+  .card-num {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    opacity: 0.4;
+    margin-bottom: 4px;
+  }
+  .card-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #f7fafc;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .card-desc {
+    font-size: 12px;
+    color: rgba(255,255,255,0.38);
+    line-height: 1.55;
+  }
+  .arrow-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+  .card:hover .arrow-icon { transform: translateX(5px); }
+
+  /* ── FOOTER ── */
+  .footer {
+    position: relative;
+    z-index: 1;
+    margin-top: 48px;
+    font-size: 11px;
+    color: #2d3748;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  @media (max-width: 480px) {
+    .card-inner { gap: 14px; }
+    .card-icon { width: 42px; height: 42px; font-size: 20px; }
+    .card-title { font-size: 16px; }
+    .arrow-icon { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="eyebrow">✦ NGS Related Portfolio</div>
+
+  <h1>
+    <span class="name">Mohsen Razzaznian</span>
+    <span class="label">Next-Generation Sequencing · Bioinformatics</span>
+  </h1>
+
+  <div class="divider"></div>
+
+  <div class="cards">
+
+    <!-- Card 1 -->
+    <a class="card card-1" href="cart_is_pipeline_advantages.html">
+      <div class="card-inner">
+        <div class="card-icon">🧬</div>
+        <div class="card-body">
+          <div class="card-tag">CAR-T · Lentiviral WGS</div>
+          <div class="card-title">Integration Site Analysis</div>
+          <div class="card-desc">Genome-wide pipeline resolving intended CAR-cassette integration from vector-backbone sequence — from raw FASTQ to safety-graded sites.</div>
+        </div>
+        <div class="arrow-icon">→</div>
+      </div>
+    </a>
+
+    <!-- Card 2 -->
+    <a class="card card-2" href="AccuWes_Flow.html">
+      <div class="card-inner">
+        <div class="card-icon">🔬</div>
+        <div class="card-body">
+          <div class="card-tag">WES · Variant Calling</div>
+          <div class="card-title">WES Data Analysis Flowchart</div>
+          <div class="card-desc">AccuWes vs. standard industry pipeline — a stage-by-stage comparison of goals, advantages, and clinical performance metrics.</div>
+        </div>
+        <div class="arrow-icon">→</div>
+      </div>
+    </a>
+
+  </div>
+
+</div>
+
+<div class="footer">Mohsen Razzaznian · NGS Bioinformatics Portfolio</div>
+
+</body>
+</html>

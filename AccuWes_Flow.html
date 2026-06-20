@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AccuWes vs Normal Industry Pipeline</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    background: #080b12;
+    min-height: 100vh;
+    color: #e2e8f0;
+    padding: 48px 32px 64px;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 52px;
+  }
+  .page-header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #f7fafc;
+    letter-spacing: -0.5px;
+  }
+  .page-header p {
+    font-size: 13px;
+    color: #4a5568;
+    margin-top: 8px;
+  }
+
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    gap: 0 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+    align-items: start;
+  }
+  .col-divider {
+    background: linear-gradient(to bottom, transparent, #2d3748 10%, #2d3748 90%, transparent);
+    align-self: stretch;
+  }
+
+  .col-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .col-badge {
+    display: inline-block;
+    padding: 5px 16px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .badge-std { background: #1a2030; border: 1px solid #2d3748; color: #718096; }
+  .badge-enh { background: #0a2318; border: 1px solid #276749; color: #68d391; }
+  .col-title { font-size: 20px; font-weight: 800; color: #f7fafc; }
+  .col-sub { font-size: 12px; color: #4a5568; margin-top: 5px; }
+
+  .stage {
+    border-radius: 14px;
+    padding: 16px 18px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .stage-icon {
+    font-size: 20px;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .stage-num {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    opacity: 0.4;
+    margin-bottom: 3px;
+  }
+  .stage-goal {
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.25;
+  }
+  .stage-desc {
+    font-size: 12px;
+    color: rgba(255,255,255,0.42);
+    margin-top: 4px;
+    line-height: 1.55;
+  }
+
+  .adv {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 10px;
+    margin-top: 7px;
+    margin-right: 4px;
+    letter-spacing: 0.2px;
+  }
+  .adv-green  { background: #0a2318; color: #68d391; border: 1px solid #276749; }
+  .adv-blue   { background: #0a1428; color: #90cdf4; border: 1px solid #2b6cb0; }
+  .adv-purple { background: #1a0d30; color: #d6bcfa; border: 1px solid #6b46c1; }
+  .adv-amber  { background: #1e1000; color: #fbd38d; border: 1px solid #b7791f; }
+
+  /* Standard colors */
+  .ss1 { background: #0d1520; border: 1px solid #1e3a5f; }
+  .ss2 { background: #0d1a1a; border: 1px solid #1a4040; }
+  .ss3 { background: #1a1000; border: 1px solid #4a2800; }
+  .ss4 { background: #120a28; border: 1px solid #2d1b5e; }
+  .ss5 { background: #100e2a; border: 1px solid #3c2a6e; }
+  .ss6 { background: #0a1038; border: 1px solid #1e2a6e; }
+  .ss7 { background: #1a1000; border: 1px solid #4a2c00; }
+  .ss8 { background: #1a0808; border: 1px solid #4a1020; }
+
+  /* Enhanced colors */
+  .es1 { background: #0d1520; border: 1px solid #2b6cb0; }
+  .es2 { background: #0a1a1a; border: 1px solid #2c7a7b; }
+  .es3 { background: #1e1200; border: 1px solid #c05621; }
+  .es4 { background: #140c2e; border: 1px solid #6b46c1; }
+  .es5 { background: #0a2018; border: 1px solid #276749; }
+  .es6 { background: #0a1038; border: 1px solid #4c51bf; }
+  .es7 { background: #1e1200; border: 1px solid #b7791f; }
+  .es8 { background: #1e0808; border: 1px solid #c53030; }
+
+  .arrow {
+    display: flex;
+    justify-content: center;
+    padding: 5px 0;
+  }
+  .arrow-inner { display: flex; flex-direction: column; align-items: center; }
+  .a-line { width: 1.5px; height: 16px; background: #2d3748; }
+  .a-tip {
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #2d3748;
+  }
+
+  .output {
+    border-radius: 14px;
+    padding: 18px 20px;
+    text-align: center;
+  }
+  .out-std { background: #0d1220; border: 1px solid #2d3748; }
+  .out-enh { background: #0a1a10; border: 1px solid #276749; }
+  .out-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; opacity: 0.4; margin-bottom: 8px; }
+  .out-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 14px; }
+  .out-metrics { display: flex; justify-content: center; gap: 32px; }
+  .metric-val { font-size: 26px; font-weight: 800; }
+  .metric-label { font-size: 10px; color: #4a5568; font-weight: 600; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .std-color { color: #718096; }
+  .enh-color { color: #68d391; }
+
+  .bottom-bar {
+    max-width: 1100px;
+    margin: 44px auto 0;
+    background: #0d1220;
+    border: 1px solid #1e2a40;
+    border-radius: 16px;
+    padding: 28px 32px;
+  }
+  .bottom-bar h3 {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #4a5568;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 22px;
+  }
+  .metrics-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .m-card-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #4a5568;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  .m-row { display: flex; flex-direction: column; gap: 6px; }
+  .m-val {
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .m-std { background: #1a2030; color: #718096; border: 1px solid #2d3748; }
+  .m-enh { background: #0a2318; color: #68d391; border: 1px solid #276749; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>AccuWes vs Normal Industry Pipeline</h1>
+  <p>Standard approach vs. AccuWes pipeline · Goals & advantages</p>
+</div>
+
+<div class="columns">
+
+  <!-- STANDARD -->
+  <div>
+    <div class="col-header">
+      <div class="col-badge badge-std">Industry Standard</div>
+      <div class="col-title">Common Pipeline</div>
+      <div class="col-sub">Widely used · Basic coverage</div>
+    </div>
+
+    <div class="stage ss1">
+      <div class="stage-icon">🔍</div>
+      <div>
+        <div class="stage-num">Stage 1</div>
+        <div class="stage-goal">Assess Read Quality</div>
+        <div class="stage-desc">Verify raw sequencing data is reliable before proceeding</div>
+      </div>
+    </div>
+    <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+    <div class="stage ss2">
+      <div class="stage-icon">✂️</div>
+      <div>
+        <div class="stage-num">Stage 2</div>
+        <div class="stage-goal">Clean the Data</div>
+        <div class="stage-desc">Remove low-quality reads and sequencing artifacts</div>
+      </div>
+    </div>
+    <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+    <div class="stage ss3">
+      <div class="stage-icon">🧬</div>
+      <div>
+        <div class="stage-num">Stage 3</div>
+        <div class="stage-goal">Map to the Human Genome</div>
+        <div class="stage-desc">Locate where each read belongs in the reference genome</div>
+      </div>
+    </div>
+    <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+    <div class="stage ss4">
+      <div class="stage-icon">⚙️</div>
+      <div>
+        <div class="stage-num">Stage 4</div>
+        <div class="stage-goal">Reduce Technical Errors</div>
+        <div class="stage-desc">Remove duplicate reads and correct systematic quality biases</div>
+      </div>
+    </div>
+    <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+    <div class="stage ss5">
+      <div class="stage-icon">🧪</div>
+      <div>
+        <div class="stage-num">Stage 5</div>
+        <div class="stage-goal">Detect Variants</div>
+        <div class="stage-desc">Identify single-nucleotide changes and small insertions/deletions only</div>
+      </div>
+    </div>
+    <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+    <div class="stage ss6">
+      <div class="stage-icon">🔬</div>
+      <div>
+        <div class="stage-num">Stage 6</div>
+        <div class="stage-goal">Remove False Positives</div>
+        <div class="stage-desc">Apply fixed quality thresholds to retain high-confidence calls</div>
+      </div>
+    </div>
+    <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+    <div class="stage ss7">
+      <div class="stage-icon">📚</div>
+      <div>
+        <div class="stage-num">Stage 7</div>
+        <div class="stage-goal">Understand Variant Impact</div>
+        <div class="stage-desc">Cross-reference variants against clinical and global population databases only — regional populations underrepresented</div>
+      </div>
+    </div>
+    <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+    <div class="stage ss8">
+      <div class="stage-icon">⚕️</div>
+      <div>
+        <div class="stage-num">Stage 8</div>
+        <div class="stage-goal">Classify Clinical Significance</div>
+        <div class="stage-desc">Apply standard ACMG criteria · Manual expert review of all variants</div>
+      </div>
+    </div>
+    <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+    <div class="output out-std">
+      <div class="out-label">Output</div>
+      <div class="out-title">📋 Clinical Variant Report</div>
+      <div class="out-metrics">
+        <div>
+          <div class="metric-val std-color">~28%</div>
+          <div class="metric-label">Diagnostic Yield</div>
+        </div>
+        <div>
+          <div class="metric-val std-color">High</div>
+          <div class="metric-label">VUS Rate</div>
+        </div>
+        <div>
+          <div class="metric-val std-color">8–15h</div>
+          <div class="metric-label">Runtime</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-divider"></div>
+
+  <!-- ENHANCED -->
+  <div>
+    <div class="col-header">
+      <div class="col-badge badge-enh">✦ AccuWes</div>
+      <div class="col-title">Upgraded Pipeline</div>
+      <div class="col-sub">Designed and benchmarked AccuWes, a customized and high-throughput NGS pipeline proposal optimized for speed and variant calling accuracy.</div>
+      
+      <div class="col-sub">Higher accuracy · Broader detection · Faster</div>
+    </div>
+
+    <div class="stage es1">
+      <div class="stage-icon">🔍</div>
+      <div>
+        <div class="stage-num">Stage 1</div>
+        <div class="stage-goal">Assess Read Quality</div>
+        <div class="stage-desc">Unified multi-sample reporting for faster review across a cohort</div>
+        <div><span class="adv adv-blue">↑ Faster decision-making across samples</span></div>
+      </div>
+    </div>
+    <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+    <div class="stage es2">
+      <div class="stage-icon">✂️</div>
+      <div>
+        <div class="stage-num">Stage 2</div>
+        <div class="stage-goal">Clean the Data</div>
+        <div class="stage-desc">Integrated quality control and trimming in a single pass</div>
+        <div><span class="adv adv-blue">↑ ~2× faster preprocessing</span></div>
+      </div>
+    </div>
+    <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+    <div class="stage es3">
+      <div class="stage-icon">🧬</div>
+      <div>
+        <div class="stage-num">Stage 3</div>
+        <div class="stage-goal">Map to the Human Genome</div>
+        <div class="stage-desc">Same sequencing depth · Faster alignment engine reduces compute time</div>
+        <div><span class="adv adv-blue">↑ ~2× faster alignment</span></div>
+      </div>
+    </div>
+    <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+    <div class="stage es4">
+      <div class="stage-icon">⚙️</div>
+      <div>
+        <div class="stage-num">Stage 4</div>
+        <div class="stage-goal">Reduce Technical Errors</div>
+        <div class="stage-desc">Calibration uses population-matched resources, not generic ones</div>
+        <div><span class="adv adv-green">↑ More accurate for diverse patient populations</span></div>
+      </div>
+    </div>
+    <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+    <div class="stage es5">
+      <div class="stage-icon">🧪</div>
+      <div>
+        <div class="stage-num">Stage 5</div>
+        <div class="stage-goal">Detect More Variant Types</div>
+        <div class="stage-desc">SNPs and indels via ensemble calling (two independent callers) · Copy number variants detected in parallel from the same data</div>
+        <div><span class="adv adv-green">↑ Higher precision through caller agreement</span></div>
+        <div><span class="adv adv-green">↑ CNVs detected — a major missed disease cause in standard pipelines</span></div>
+        <div><span class="adv adv-blue">↑ Parallel execution keeps runtime equivalent</span></div>
+      </div>
+    </div>
+    <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+    <div class="stage es6">
+      <div class="stage-icon">🔬</div>
+      <div>
+        <div class="stage-num">Stage 6</div>
+        <div class="stage-goal">Population-Aware Filtering</div>
+        <div class="stage-desc">Filtering thresholds adapt to the patient's ethnic background, avoiding mislabeling population-common variants as pathogenic</div>
+        <div><span class="adv adv-green">↑ Fewer false positives in non-European patients</span></div>
+      </div>
+    </div>
+    <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+    <div class="stage es7">
+      <div class="stage-icon">📚</div>
+      <div>
+        <div class="stage-num">Stage 7</div>
+        <div class="stage-goal">Broader Biological Context</div>
+        <div class="stage-desc">Cross-references clinical, global, and region-specific population frequency databases — including dedicated Iranian and Middle Eastern resources — reducing false pathogenicity calls in under-represented populations</div>
+        <div><span class="adv adv-amber">↑ Covers Iranian ethnic diversity and GCC populations</span></div>
+        <div><span class="adv adv-green">↑ Fewer false positives in patients missed by global databases</span></div>
+      </div>
+    </div>
+    <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+    <div class="stage es8">
+      <div class="stage-icon">⚕️</div>
+      <div>
+        <div class="stage-num">Stage 8</div>
+        <div class="stage-goal">Phenotype-Driven Classification</div>
+        <div class="stage-desc">Patient symptoms guide variant ranking — reviewers see a short prioritized list instead of hundreds of unranked candidates. Classifications update automatically as new evidence emerges.</div>
+        <div><span class="adv adv-green">↑ Dramatically lower VUS burden</span></div>
+        <div><span class="adv adv-purple">↑ Patients can receive a diagnosis later without re-sequencing</span></div>
+      </div>
+    </div>
+    <div class="arrow"><div class="arrow-inner"><div class="a-line"></div><div class="a-tip"></div></div></div>
+
+    <div class="output out-enh">
+      <div class="out-label">Output</div>
+      <div class="out-title">📋 Clinical Variant Report</div>
+      <div class="out-metrics">
+        <div>
+          <div class="metric-val enh-color">~50%</div>
+          <div class="metric-label">Diagnostic Yield</div>
+        </div>
+        <div>
+          <div class="metric-val enh-color">Low</div>
+          <div class="metric-label">VUS Rate</div>
+        </div>
+        <div>
+          <div class="metric-val enh-color">8–12h</div>
+          <div class="metric-label">Runtime</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Bottom bar -->
+<div class="bottom-bar">
+  <h3>Key Advantages at a Glance</h3>
+  <div class="metrics-row">
+    <div>
+      <div class="m-card-label">Diagnostic Yield</div>
+      <div class="m-row">
+        <div class="m-val m-std">~25–30%</div>
+        <div class="m-val m-enh">~45–50%</div>
+      </div>
+    </div>
+    <div>
+      <div class="m-card-label">Variant Types Detected</div>
+      <div class="m-row">
+        <div class="m-val m-std">SNPs & Indels only</div>
+        <div class="m-val m-enh">SNPs · Indels · CNVs</div>
+      </div>
+    </div>
+    <div>
+      <div class="m-card-label">Population Coverage</div>
+      <div class="m-row">
+        <div class="m-val m-std">European-biased</div>
+        <div class="m-val m-enh">Population specific</div>
+      </div>
+    </div>
+    <div>
+      <div class="m-card-label">Bioinformatics Runtime</div>
+      <div class="m-row">
+        <div class="m-val m-std">8–15 hrs (sequential)</div>
+        <div class="m-val m-enh">8–12 hrs (parallel)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
