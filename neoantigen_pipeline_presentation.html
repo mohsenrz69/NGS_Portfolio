@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Neoantigen Prediction Pipeline</title>
+<style>
+  :root {
+    --bg:         #0b0f18;
+    --bg2:        #131929;
+    --border:     rgba(255,255,255,0.07);
+    --border2:    rgba(255,255,255,0.13);
+
+    --purple:     #9b8fdf;
+    --purple-bg:  rgba(155,143,223,0.10);
+    --teal:       #22b587;
+    --teal-bg:    rgba(34,181,135,0.10);
+    --blue:       #4a9ee8;
+    --blue-bg:    rgba(74,158,232,0.10);
+    --coral:      #e0673a;
+    --coral-bg:   rgba(224,103,58,0.10);
+    --green:      #72b02a;
+    --green-bg:   rgba(114,176,42,0.10);
+    --struct:     #12b8c2;
+    --struct-bg:  rgba(18,184,194,0.10);
+    --amber:      #d48820;
+    --amber-bg:   rgba(212,136,32,0.10);
+    --pink:       #dc5f8a;
+    --pink-bg:    rgba(220,95,138,0.10);
+
+    --text:       #dde4f0;
+    --text2:      #7e8fa8;
+    --text3:      #4e5a6e;
+
+    --radius:     10px;
+    --phase-w:    56px;
+    --gap:        12px;
+    --arrow:      rgba(255,255,255,0.14);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+    min-height: 100vh;
+    padding: 36px 28px 72px;
+  }
+
+  /* ── Header ── */
+  header {
+    max-width: 960px;
+    margin: 0 auto 44px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    border-bottom: 1px solid var(--border2);
+    padding-bottom: 26px;
+  }
+  .logo {
+    width: 48px; height: 48px; flex-shrink: 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--purple-bg) 0%, var(--struct-bg) 100%);
+    border: 1px solid var(--purple);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+  }
+  header h1 {
+    font-size: 22px; font-weight: 700; letter-spacing: -0.4px;
+    color: var(--text); margin-bottom: 4px;
+  }
+  header p { font-size: 14px; color: var(--text2); line-height: 1.55; }
+
+  /* ── Pipeline ── */
+  .pipeline {
+    display: flex;
+    flex-direction: column;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  /* ── Phase row ── */
+  .phase {
+    display: flex;
+    align-items: stretch;
+    position: relative;
+  }
+
+  /* Phase label strip */
+  .phase-label {
+    width: var(--phase-w);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 8px 0;
+  }
+  .phase-line {
+    position: absolute;
+    left: 50%; top: 0; bottom: 0;
+    width: 2px;
+    transform: translateX(-50%);
+    z-index: 0;
+  }
+  .pill {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 10px 7px;
+    border-radius: 20px;
+    white-space: nowrap;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Arrow connector ── */
+  .arrow-row {
+    display: flex;
+    padding-left: var(--phase-w);
+    height: 32px;
+    align-items: stretch;
+  }
+  .arrow-trunk {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    position: relative;
+  }
+  .arrow-trunk::before {
+    content: '';
+    position: absolute;
+    left: 50%; top: 0; bottom: 8px;
+    width: 2px;
+    background: var(--arrow);
+    transform: translateX(-50%);
+  }
+  .arrow-trunk::after {
+    content: '';
+    position: absolute;
+    left: 50%; bottom: 0;
+    transform: translateX(-50%);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 9px solid var(--arrow);
+  }
+
+  /* ── Nodes area ── */
+  .nodes {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap);
+    padding: 10px 0 10px 16px;
+    align-items: stretch;
+  }
+
+  /* ── Individual node card ── */
+  .node {
+    flex: 1 1 200px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: border-color 0.18s, transform 0.14s, box-shadow 0.18s;
+  }
+  .node:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.3);
+    border-color: var(--border2);
+  }
+  .node.wide { flex: 1 1 100%; }
+
+  /* Goal line */
+  .node-goal {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--text);
+  }
+
+  /* Advantage pills */
+  .node-adv {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 2px;
+  }
+  .adv-tag {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border2);
+    color: var(--text2);
+    line-height: 1.4;
+  }
+
+  /* Step icon dot */
+  .node-icon {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-bottom: 2px;
+  }
+
+  /* ── Phase colour themes ── */
+  /* purple */
+  .ph-purple .phase-line { background: linear-gradient(to bottom, transparent 0%, var(--purple) 50%, transparent 100%); }
+  .ph-purple .pill       { background: var(--purple-bg); color: var(--purple); border: 1px solid rgba(155,143,223,0.4); }
+  .ph-purple .node       { background: var(--purple-bg); border-color: rgba(155,143,223,0.18); }
+  .ph-purple .node-icon  { background: rgba(155,143,223,0.15); }
+  .ph-purple .adv-tag    { border-color: rgba(155,143,223,0.25); color: var(--purple); background: rgba(155,143,223,0.07); }
+
+  /* teal */
+  .ph-teal .phase-line { background: linear-gradient(to bottom, transparent 0%, var(--teal) 50%, transparent 100%); }
+  .ph-teal .pill       { background: var(--teal-bg); color: var(--teal); border: 1px solid rgba(34,181,135,0.4); }
+  .ph-teal .node       { background: var(--teal-bg); border-color: rgba(34,181,135,0.18); }
+  .ph-teal .node-icon  { background: rgba(34,181,135,0.15); }
+  .ph-teal .adv-tag    { border-color: rgba(34,181,135,0.25); color: var(--teal); background: rgba(34,181,135,0.07); }
+
+  /* blue */
+  .ph-blue .phase-line { background: linear-gradient(to bottom, transparent 0%, var(--blue) 50%, transparent 100%); }
+  .ph-blue .pill       { background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(74,158,232,0.4); }
+  .ph-blue .node       { background: var(--blue-bg); border-color: rgba(74,158,232,0.18); }
+  .ph-blue .node-icon  { background: rgba(74,158,232,0.15); }
+  .ph-blue .adv-tag    { border-color: rgba(74,158,232,0.25); color: var(--blue); background: rgba(74,158,232,0.07); }
+
+  /* coral */
+  .ph-coral .phase-line { background: linear-gradient(to bottom, transparent 0%, var(--coral) 50%, transparent 100%); }
+  .ph-coral .pill       { background: var(--coral-bg); color: var(--coral); border: 1px solid rgba(224,103,58,0.4); }
+  .ph-coral .node       { background: var(--coral-bg); border-color: rgba(224,103,58,0.18); }
+  .ph-coral .node-icon  { background: rgba(224,103,58,0.15); }
+  .ph-coral .adv-tag    { border-color: rgba(224,103,58,0.25); color: var(--coral); background: rgba(224,103,58,0.07); }
+
+  /* green */
+  .ph-green .phase-line { background: linear-gradient(to bottom, transparent 0%, var(--green) 50%, transparent 100%); }
+  .ph-green .pill       { background: var(--green-bg); color: var(--green); border: 1px solid rgba(114,176,42,0.4); }
+  .ph-green .node       { background: var(--green-bg); border-color: rgba(114,176,42,0.18); }
+  .ph-green .node-icon  { background: rgba(114,176,42,0.15); }
+  .ph-green .adv-tag    { border-color: rgba(114,176,42,0.25); color: var(--green); background: rgba(114,176,42,0.07); }
+
+  /* struct (cyan) */
+  .ph-struct .phase-line { background: linear-gradient(to bottom, transparent 0%, var(--struct) 50%, transparent 100%); }
+  .ph-struct .pill       { background: var(--struct-bg); color: var(--struct); border: 1px solid rgba(18,184,194,0.5); }
+  .ph-struct .node       { background: var(--struct-bg); border-color: rgba(18,184,194,0.22); }
+  .ph-struct .node-icon  { background: rgba(18,184,194,0.15); }
+  .ph-struct .adv-tag    { border-color: rgba(18,184,194,0.28); color: var(--struct); background: rgba(18,184,194,0.08); }
+  .ph-struct .nodes      { border-left: 3px solid rgba(18,184,194,0.5); padding-left: 14px; margin-left: 2px; }
+  .new-badge {
+    display: inline-block; font-size: 8px; font-weight: 800;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    background: var(--struct); color: #0b0f18;
+    border-radius: 4px; padding: 1px 5px;
+    margin-left: 4px; vertical-align: middle; line-height: 1.6;
+  }
+
+  /* amber */
+  .ph-amber .phase-line { background: linear-gradient(to bottom, transparent 0%, var(--amber) 50%, transparent 100%); }
+  .ph-amber .pill       { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(212,136,32,0.4); }
+  .ph-amber .node       { background: var(--amber-bg); border-color: rgba(212,136,32,0.18); }
+  .ph-amber .node-icon  { background: rgba(212,136,32,0.15); }
+  .ph-amber .adv-tag    { border-color: rgba(212,136,32,0.25); color: var(--amber); background: rgba(212,136,32,0.07); }
+
+  /* pink / output */
+  .ph-pink .phase-line { background: linear-gradient(to bottom, transparent 0%, var(--pink) 50%, transparent 100%); }
+  .ph-pink .pill       { background: var(--pink-bg); color: var(--pink); border: 1px solid rgba(220,95,138,0.4); }
+  .ph-pink .node       { background: var(--pink-bg); border-color: rgba(220,95,138,0.18); }
+  .ph-pink .node-icon  { background: rgba(220,95,138,0.15); }
+  .ph-pink .adv-tag    { border-color: rgba(220,95,138,0.25); color: var(--pink); background: rgba(220,95,138,0.07); }
+
+  /* ── Legend ── */
+  .legend {
+    max-width: 960px;
+    margin: 52px auto 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    background: var(--bg2);
+  }
+  .legend h3 {
+    font-size: 11px; font-weight: 700; color: var(--text3);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 14px;
+  }
+  .legend-grid {
+    display: flex; flex-wrap: wrap; gap: 10px 28px;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--text2);
+  }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🧬</div>
+  <div>
+    <h1>Cancer neoantigen prediction pipeline</h1>
+    <p>Goal and advantage of each step — from patient samples to a personalised mRNA cancer vaccine.</p>
+  </div>
+</header>
+
+<div class="pipeline">
+
+  <!-- ══ 1. INPUT ══ -->
+  <div class="phase ph-purple">
+    <div class="phase-label">
+      <div class="phase-line"></div>
+      <div class="pill">Input</div>
+    </div>
+    <div class="nodes">
+      <div class="node">
+        <div class="node-icon">🔬</div>
+        <div class="node-goal">Tumor whole-exome sequencing</div>
+        <div class="node-adv">
+          <span class="adv-tag">Captures all coding mutations</span>
+          <span class="adv-tag">Cost-effective vs whole genome</span>
+        </div>
+      </div>
+      <div class="node">
+        <div class="node-icon">🧪</div>
+        <div class="node-goal">Matched normal sequencing</div>
+        <div class="node-adv">
+          <span class="adv-tag">Separates somatic from germline</span>
+          <span class="adv-tag">Eliminates false positives</span>
+        </div>
+      </div>
+      <div class="node">
+        <div class="node-icon">🔭</div>
+        <div class="node-goal">Tumor RNA sequencing</div>
+        <div class="node-adv">
+          <span class="adv-tag">Confirms gene expression</span>
+          <span class="adv-tag">Detects splicing neoantigens</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-row"><div class="arrow-trunk"></div></div>
+
+  <!-- ══ 2. QC / ALIGN ══ -->
+  <div class="phase ph-teal">
+    <div class="phase-label">
+      <div class="phase-line"></div>
+      <div class="pill">QC / Align</div>
+    </div>
+    <div class="nodes">
+      <div class="node">
+        <div class="node-icon">✅</div>
+        <div class="node-goal">Quality control &amp; read trimming</div>
+        <div class="node-adv">
+          <span class="adv-tag">Removes low-quality bases</span>
+          <span class="adv-tag">Prevents downstream errors</span>
+        </div>
+      </div>
+      <div class="node">
+        <div class="node-icon">📍</div>
+        <div class="node-goal">Reference genome alignment</div>
+        <div class="node-adv">
+          <span class="adv-tag">Maps reads to genomic positions</span>
+          <span class="adv-tag">Enables precise variant detection</span>
+        </div>
+      </div>
+      <div class="node">
+        <div class="node-icon">📊</div>
+        <div class="node-goal">Expression quantification</div>
+        <div class="node-adv">
+          <span class="adv-tag">Measures transcript abundance</span>
+          <span class="adv-tag">Filters unexpressed variants</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-row"><div class="arrow-trunk"></div></div>
+
+  <!-- ══ 3. VARIANT CALLING ══ -->
+  <div class="phase ph-blue">
+    <div class="phase-label">
+      <div class="phase-line"></div>
+      <div class="pill">Variant call</div>
+    </div>
+    <div class="nodes">
+      <div class="node">
+        <div class="node-icon">🎯</div>
+        <div class="node-goal">Somatic mutation detection</div>
+        <div class="node-adv">
+          <span class="adv-tag">Identifies tumor-specific changes</span>
+          <span class="adv-tag">SNVs, indels, frameshifts</span>
+        </div>
+      </div>
+      <div class="node">
+        <div class="node-icon">📈</div>
+        <div class="node-goal">Tumor purity &amp; copy number</div>
+        <div class="node-adv">
+          <span class="adv-tag">Corrects allele frequency estimates</span>
+          <span class="adv-tag">Improves clonality assessment</span>
+        </div>
+      </div>
+      <div class="node">
+        <div class="node-icon">🧹</div>
+        <div class="node-goal">Variant filtering</div>
+        <div class="node-adv">
+          <span class="adv-tag">Removes germline noise</span>
+          <span class="adv-tag">Retains high-confidence calls</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-row"><div class="arrow-trunk"></div></div>
+
+  <!-- ══ 4. HLA TYPING ══ -->
+  <div class="phase ph-coral">
+    <div class="phase-label">
+      <div class="phase-line"></div>
+      <div class="pill">HLA</div>
+    </div>
+    <div class="nodes">
+      <div class="node wide">
+        <div class="node-icon">🔑</div>
+        <div class="node-goal">Patient-specific HLA allele determination</div>
+        <div class="node-adv">
+          <span class="adv-tag">Enables personalized binding prediction</span>
+          <span class="adv-tag">Covers class I and class II alleles</span>
+          <span class="adv-tag">High-resolution 4-digit typing</span>
+          <span class="adv-tag">Critical — wrong HLA = wrong predictions</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-row"><div class="arrow-trunk"></div></div>
+
+  <!-- ══ 5. ANNOTATION & PEPTIDE ══ -->
+  <div class="phase ph-green">
+    <div class="phase-label">
+      <div class="phase-line"></div>
+      <div class="pill">Annotate</div>
+    </div>
+    <div class="nodes">
+      <div class="node">
+        <div class="node-icon">🏷️</div>
+        <div class="node-goal">Functional variant annotation</div>
+        <div class="node-adv">
+          <span class="adv-tag">Links variants to protein changes</span>
+          <span class="adv-tag">Filters synonymous mutations</span>
+          <span class="adv-tag">Adds population frequency context</span>
+        </div>
+      </div>
+      <div class="node">
+        <div class="node-icon">🌡️</div>
+        <div class="node-goal">Expression-based filtering</div>
+        <div class="node-adv">
+          <span class="adv-tag">Confirms variant is actually expressed</span>
+          <span class="adv-tag">Reduces non-immunogenic candidates</span>
+        </div>
+      </div>
+      <div class="node">
+        <div class="node-icon">⚗️</div>
+        <div class="node-goal">Mutant peptide generation</div>
+        <div class="node-adv">
+          <span class="adv-tag">Produces all candidate neoepitopes</span>
+          <span class="adv-tag">Multiple peptide lengths for MHC coverage</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-row"><div class="arrow-trunk"></div></div>
+
+  <!-- ══ 6. MHC BINDING ══ -->
+  <div class="phase ph-purple">
+    <div class="phase-label">
+      <div class="phase-line"></div>
+      <div class="pill">MHC bind</div>
+    </div>
+    <div class="nodes">
+      <div class="node">
+        <div class="node-icon">🧲</div>
+        <div class="node-goal">MHC class I binding prediction</div>
+        <div class="node-adv">
+          <span class="adv-tag">Identifies peptides presented to CD8⁺ T cells</span>
+          <span class="adv-tag">Core filter for immunogenicity potential</span>
+        </div>
+      </div>
+      <div class="node">
+        <div class="node-icon">🤝</div>
+        <div class="node-goal">MHC class II binding prediction</div>
+        <div class="node-adv">
+          <span class="adv-tag">Identifies peptides presented to CD4⁺ T cells</span>
+          <span class="adv-tag">Enhances vaccine breadth &amp; durability</span>
+        </div>
+      </div>
+      <div class="node">
+        <div class="node-icon">🎚️</div>
+        <div class="node-goal">Affinity-based candidate selection</div>
+        <div class="node-adv">
+          <span class="adv-tag">Drastically reduces candidate space</span>
+          <span class="adv-tag">Prioritises strong binders</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-row"><div class="arrow-trunk"></div></div>
+
+  <!-- ══ 7. STRUCTURAL ANALYSIS (NEW) ══ -->
+  <div class="phase ph-struct">
+    <div class="phase-label">
+      <div class="phase-line"></div>
+      <div class="pill">Structure <span class="new-badge">new</span></div>
+    </div>
+    <div class="nodes">
+      <div class="node">
+        <div class="node-icon">🧊</div>
+        <div class="node-goal">Peptide–MHC 3D complex modelling</div>
+        <div class="node-adv">
+          <span class="adv-tag">Validates binding pose in the groove</span>
+          <span class="adv-tag">Reveals peptide conformation</span>
+        </div>
+      </div>
+      <div class="node">
+        <div class="node-icon">🔗</div>
+        <div class="node-goal">TCR–pMHC docking simulation</div>
+        <div class="node-adv">
+          <span class="adv-tag">Predicts actual T-cell engagement</span>
+          <span class="adv-tag">Beyond binding affinity alone</span>
+        </div>
+      </div>
+      <div class="node">
+        <div class="node-icon">⚖️</div>
+        <div class="node-goal">Structural stability scoring</div>
+        <div class="node-adv">
+          <span class="adv-tag">Thermodynamic confirmation of binding</span>
+          <span class="adv-tag">H-bond network &amp; contact analysis</span>
+        </div>
+      </div>
+      <div class="node">
+        <div class="node-icon">📌</div>
+        <div class="node-goal">Anchor residue &amp; TCR contact analysis</div>
+        <div class="node-adv">
+          <span class="adv-tag">Confirms exposed immunogenic residues</span>
+          <span class="adv-tag">Guides peptide design optimisation</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-row"><div class="arrow-trunk"></div></div>
+
+  <!-- ══ 8. RANKING ══ -->
+  <div class="phase ph-amber">
+    <div class="phase-label">
+      <div class="phase-line"></div>
+      <div class="pill">Rank</div>
+    </div>
+    <div class="nodes">
+      <div class="node">
+        <div class="node-icon">⚡</div>
+        <div class="node-goal">T-cell immunogenicity scoring</div>
+        <div class="node-adv">
+          <span class="adv-tag">Predicts likelihood of immune activation</span>
+          <span class="adv-tag">Goes beyond binding prediction</span>
+        </div>
+      </div>
+      <div class="node">
+        <div class="node-icon">🌀</div>
+        <div class="node-goal">Clonality &amp; cancer cell fraction</div>
+        <div class="node-adv">
+          <span class="adv-tag">Prioritises clonal mutations</span>
+          <span class="adv-tag">Present in all tumor cells</span>
+        </div>
+      </div>
+      <div class="node">
+        <div class="node-icon">🏆</div>
+        <div class="node-goal">Integrated neoantigen ranking</div>
+        <div class="node-adv">
+          <span class="adv-tag">Combines all scores into one rank</span>
+          <span class="adv-tag">Structural score improves precision</span>
+          <span class="adv-tag">Produces a final candidate shortlist</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-row"><div class="arrow-trunk"></div></div>
+
+  <!-- ══ 9. OUTPUT ══ -->
+  <div class="phase ph-pink">
+    <div class="phase-label">
+      <div class="phase-line"></div>
+      <div class="pill">Output</div>
+    </div>
+    <div class="nodes">
+      <div class="node wide">
+        <div class="node-icon">💉</div>
+        <div class="node-goal">Personalised mRNA cancer vaccine</div>
+        <div class="node-adv">
+          <span class="adv-tag">Encodes only patient-specific neoantigens</span>
+          <span class="adv-tag">Targets mutations absent in healthy tissue</span>
+          <span class="adv-tag">Rapidly manufacturable per patient</span>
+          <span class="adv-tag">Activates both CD8⁺ and CD4⁺ T-cell responses</span>
+          <span class="adv-tag">Structurally validated candidates improve efficacy</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /pipeline -->
+
+<!-- Legend -->
+<div class="legend">
+  <h3>Phase colour guide</h3>
+  <div class="legend-grid">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Sample input / MHC binding</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--teal)"></div>QC &amp; alignment</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Variant calling</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--coral)"></div>HLA typing</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Annotation &amp; peptide generation</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--struct); border-radius:50%"></div><span style="color:var(--struct); font-weight:600">Structural analysis (new)</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Immunogenicity &amp; ranking</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--pink)"></div>Clinical outputs</div>
+  </div>
+</div>
+
+</body>
+</html>
