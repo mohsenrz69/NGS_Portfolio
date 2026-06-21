@@ -151,6 +151,15 @@
   .card-2 .card-num { color: #2c7a7b; }
   .card-2 .arrow-icon { color: #81e6d9; }
 
+  /* Card 3 — Neoantigen */
+  .card-3 { border-color: rgba(220,95,138,0.35); }
+  .card-3::before { background: radial-gradient(ellipse at 0% 50%, rgba(220,95,138,0.10), transparent 70%); }
+  .card-3:hover { border-color: rgba(220,95,138,0.7); background: rgba(220,95,138,0.07); }
+  .card-3:hover::before { opacity: 1; }
+  .card-3 .card-tag { background: #1e0814; color: #f080a8; border: 1px solid #dc5f8a; }
+  .card-3 .card-num { color: #dc5f8a; }
+  .card-3 .arrow-icon { color: #f080a8; }
+
   .card-inner {
     display: flex;
     align-items: center;
@@ -247,6 +256,19 @@
           <div class="card-tag">CAR-T · Lentiviral WGS</div>
           <div class="card-title">Integration Site Analysis</div>
           <div class="card-desc">Genome-wide pipeline resolving intended CAR-cassette integration from vector-backbone sequence — from raw FASTQ to safety-graded sites.</div>
+        </div>
+        <div class="arrow-icon">→</div>
+      </div>
+    </a>
+
+    <!-- Card 3 -->
+    <a class="card card-3" href="neoantigen_pipeline.html">
+      <div class="card-inner">
+        <div class="card-icon">💉</div>
+        <div class="card-body">
+          <div class="card-tag">Cancer Immunotherapy · mRNA Vaccine</div>
+          <div class="card-title">Neoantigen Prediction Pipeline</div>
+          <div class="card-desc">From tumor sequencing to personalised mRNA cancer vaccine — a 9-phase pipeline covering variant calling, HLA typing, MHC binding, structural analysis, and neoantigen ranking.</div>
         </div>
         <div class="arrow-icon">→</div>
       </div>
